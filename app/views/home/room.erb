@@ -1,0 +1,46 @@
+<div class="container">
+
+<p> 채팅시작~!! </p>
+
+
+<div id="chat_list">
+<% @posts.each do |p| %>
+    <p> <%= p.content %> </p>
+<% end %>
+</div>
+
+<textarea id="chat_content">
+</textarea>
+<a href="#" id="submit_msg">전송</a>
+
+
+<script>
+    $(function() {
+        
+        var pusher = new Pusher('8012e3962d8e6f02f4f7', {
+          encrypted: true
+        });
+        
+        var channel = pusher.subscribe('onlyone');
+        
+        channel.bind('new_message', function(data) {
+          var txt = data.msg;
+          $("#chat_list").append("<p>" + txt + "</p>");
+        });
+        
+        $("#submit_msg").click(function(){
+            $.ajax({
+                data: {content: $("#chat_content").val()},
+                url: "/home/send_msg",
+                success: function(){
+                    var txt = $("#chat_content").val();
+                    
+                    $("#chat_content").val('');
+                    $("#chat_content").focus();
+                }
+            });
+        });
+    });
+</script>
+
+</div>
